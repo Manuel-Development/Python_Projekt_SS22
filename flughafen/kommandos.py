@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 ########################################################################################################################
 """
-flugzeug.py: Description of what foobar does.
+kommandos.py: Hier liegt die "Kommandos-Klasse".
 """
 
 __author__ = "Python SS22"
@@ -13,12 +12,10 @@ import sys
 
 class Kommandos:
     CMD = {
-        "Flugzeug erfassen:": 1,
-        "Flugzeug landen:": 2,
-        "Flugzeug parken:": 3,
-        "Flugzeug starten:": 4,
-        "Historie darstellen": 5,
-        "Simulation beenden:": 6
+        "Flugzeug anlegen:": 1,
+        "Flugzeug auswählen:": 2,
+        "Historie darstellen": 3,
+        "Simulation beenden:": 4
     }
 
     def __init__(self, information_system):
@@ -30,19 +27,14 @@ class Kommandos:
         [print(key, item) for key, item in self.CMD.items()]
         print("*" * 32)
         print("\n")
-        return input("Nächste Aktion: ")
+        eingabe = input("Nächste Aktion: ")
+        return eingabe
 
-    def flugzeug_erfassen(self):
-        self.information_system.flugzeug_erfassen()
+    def flugzeug_anlegen(self):
+        self.information_system.flugzeug_anlegen()
 
-    def flugzeug_landen(self):
-        self.information_system.landung_durchfuehren()
-
-    def flugzeug_parken(self):
-        self.information_system.parken_durchfuehren()
-
-    def flugzeug_starten(self):
-        self.information_system.start_durchfuehren()
+    def flugzeug_auswaehlen(self):
+        self.information_system.flugzeug_auswaehlen()
 
     def flug_historie_darstellen(self):
         self.information_system.flugzeug_historie_ausgeben()
@@ -50,3 +42,4 @@ class Kommandos:
     @staticmethod
     def information_system_beenden():
         sys.exit(0)
+

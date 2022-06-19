@@ -1,8 +1,8 @@
 # Python_Projekt_SS22
-Python Projekt SS22
-->Achtet auf die Versionsbezeichnung beim Pull-Request. 
-->Habe hier, ohne große Mühe/Schönheit zwei Branches gebaut.
+Hallo,
+
+das Projekt löst die Problemstellung des Python Projekts.
+Die Lösung ist hierbei völlig "objekt-orientiert".
+Ausführen in Pycharm/VS-Studio oder Eclipse... .
 
 Mfg
-
-Manuel
