@@ -14,9 +14,8 @@ class Kommandos:
     CMD = {
         "Flugzeug anlegen:": 1,
         "Flugzeug auswählen:": 2,
-        "Flugzeug Warteliste:": 3,
-        "Historie darstellen": 4,
-        "Simulation beenden:": 5
+        "Historie darstellen": 3,
+        "Simulation beenden:": 4
     }
 
     def __init__(self, information_system):
@@ -28,7 +27,8 @@ class Kommandos:
         [print(key, item) for key, item in self.CMD.items()]
         print("*" * 32)
         print("\n")
-        return input("Nächste Aktion: ")
+        eingabe = input("Nächste Aktion: ")
+        return eingabe
 
     def flugzeug_anlegen(self):
         self.information_system.flugzeug_anlegen()
@@ -36,12 +36,10 @@ class Kommandos:
     def flugzeug_auswaehlen(self):
         self.information_system.flugzeug_auswaehlen()
 
-    def flugzeug_warteliste_auswaehlen(self):
-        self.information_system.flugzeug_warteliste_auswaehlen()
-
     def flug_historie_darstellen(self):
         self.information_system.flugzeug_historie_ausgeben()
 
     @staticmethod
     def information_system_beenden():
         sys.exit(0)
+

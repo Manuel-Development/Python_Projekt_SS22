@@ -7,16 +7,16 @@ __author__ = "Python SS22"
 __copyright__ = "Copyright Group_2, SFM"
 
 ########################################################################################################################
-
-from datetime import datetime, timedelta
+import traceback
+from datetime import datetime as dt, timedelta
+import datetime
 import time
 from .flugzeug import Flugzeug
 
 
 class InformationSystem:
     bekannte_flugzeuge = []
-    registrierte_flugzeuge = []
-    wartelist_landen = []
+    aktuelle_flugzeuge = []
     historie_flugzeuge = []
 
     def __init__(self, flughafen):
@@ -25,86 +25,89 @@ class InformationSystem:
     def flugzeug_anlegen(self):
         flugzeug = Flugzeug(
             typ=self._try_except_utility_methode(
-                funktion=lambda: str(input("\nFlugzeug-Typ:")),
+                funktion=lambda: str(input("\nFlugzeug-Typ: ")),
                 standard="Es wurde kein Typ definiert."),
             gesellschaft=self._try_except_utility_methode(
-                funktion=lambda: str(input("\nFlugzeug-Gesellschaft:")),
+                funktion=lambda: str(input("\nFlugzeug-Gesellschaft: ")),
                 standard="Es wurde keine Gesellschaft definiert."),
             zeit_soll=self._try_except_utility_methode(
-                funktion=lambda: int(input("\nSoll-Zeit:")),
-                standard=datetime.now() + timedelta(5)))
+                funktion=lambda: self._eingabe_uhrzeit(),
+                standard=lambda: dt.now() + timedelta(minutes=10)))
         self._ueberpruefe_vorkommen_in_system(flugzeug)
 
     def flugzeug_auswaehlen(self):
-        [print("{}: Typ:{}, Gesellschaft:{}, Nummer:{}".format(i, self.registrierte_flugzeuge[i].typ,
-                                                               self.registrierte_flugzeuge[i].gesellschaft,
-                                                               self.registrierte_flugzeuge[i].nummer))
-         for i in range(0, len(self.registrierte_flugzeuge))]
+        [print("{}: Das Flugzeug des Typs {} von der Gesellschaft {} mit der Nummer {} wartet auf {}.".format(i,
+         self.aktuelle_flugzeuge[i].typ,
+         self.aktuelle_flugzeuge[i].gesellschaft,
+         self.aktuelle_flugzeuge[i].nummer,
+         self.aktuelle_flugzeuge[i].naechster_schritt))
+         for i in range(0, len(self.aktuelle_flugzeuge))]
 
         index = self._try_except_utility_methode(
-            funktion=lambda: int(input("\nAuswahl über Index treffen:")),
-            standard="Das ist kein valider Index.")
+            funktion=lambda: int(input("\nAuswahl über Index treffen: ")),
+            standard=lambda: print("Das ist kein valider Index."))
 
-        try:
-            flugzeug = self.registrierte_flugzeuge[index]
-            print("Das Flugzeug ({}: Typ:{}, Gesellschaft:{}, Nummer:{}) "
-                  "wurde ausgewählt.".format(index,
-                                             flugzeug.typ,
-                                             flugzeug.gesellschaft,
-                                             flugzeug.nummer))
-            time.sleep(3)
-            self._naechster_schritt_aufgrund_flugzeug_status(flugzeug=flugzeug, index=index)
+        flugzeug = self.aktuelle_flugzeuge[index]
+        print(">>{}: Das Flugzeug des Typs {} von der Gesellschaft {}"
+              " mit der Nummer {} wartet auf {}.<< wurde ausgewählt\n".format(index,
+                                                                              flugzeug.typ,
+                                                                              flugzeug.gesellschaft,
+                                                                              flugzeug.nummer,
+                                                                              flugzeug.naechster_schritt))
 
-        except (Exception,):
-            print("Das ist kein valider Index.")
-            time.sleep(3)
-
-    def flugzeug_warteliste_auswaehlen(self):
-        [print("{}: Typ:{}, Gesellschaft:{}, Nummer:{}".format(i, self.wartelist_landen[i].typ,
-                                                               self.wartelist_landen[i].gesellschaft,
-                                                               self.wartelist_landen[i].nummer))
-         for i in range(0, len(self.wartelist_landen))]
-
-        index = self._try_except_utility_methode(
-            funktion=lambda: int(input("\nAuswahl über Index treffen:")),
-            standard="Das ist kein valider Index.")
-
-        try:
-            flugzeug = self.registrierte_flugzeuge[index]
-            print("Das Flugzeug ({}: Typ:{}, Gesellschaft:{}, Nummer:{}) "
-                  "wurde ausgewählt.".format(index,
-                                             flugzeug.typ,
-                                             flugzeug.gesellschaft,
-                                             flugzeug.nummer))
-            time.sleep(3)
-            self._naechster_schritt_aufgrund_flugzeug_status(flugzeug=flugzeug, index=index)
-
-        except (Exception,):
-            print("Das ist kein valider Index.")
-            time.sleep(3)
+        time.sleep(3)
+        self._naechster_schritt_aufgrund_flugzeug_status(flugzeug=flugzeug, index=index)
 
     def flugzeug_historie_ausgeben(self):
         [print(historie_flug) for historie_flug in self.historie_flugzeuge]
         time.sleep(3)
 
+    @staticmethod
+    def _eingabe_uhrzeit():
+        try:
+            return (dt.today().strftime('%Y-%m-%d') +
+                    " " +
+                    datetime.datetime.strptime(input("\nSoll-Zeit [hhmm]: "), '%H%M').strftime('%H:%M'))
+
+        except ValueError:
+            print("Die eingegebene Uhrzeit entspricht nicht dem korrekten Format.\n"
+                  "Das System setzt die Uhrzeit auf 10min in die Zukunft.")
+            raise ValueError()
+
     def _flugnummer_erzeugen(self, flugzeug):
-        return ''.join(flugzeug.typ[:2] + str(100 + len(self.registrierte_flugzeuge)))
+        return ''.join(flugzeug.typ[:2] + str(100 + len(self.aktuelle_flugzeuge)))
 
     def _ueberpruefe_vorkommen_in_system(self, flugzeug):
-        if not (flugzeug.typ in self.bekannte_flugzeuge or
-                flugzeug.gesellschaft in self.bekannte_flugzeuge):
+        if len(self.bekannte_flugzeuge) > 0:
+            for bekanntes_flugzeug in self.bekannte_flugzeuge:
+                if not (flugzeug.typ == bekanntes_flugzeug.typ or
+                        flugzeug.gesellschaft == bekanntes_flugzeug.gesellschaft):
+                    flugzeug.nummer = self._flugnummer_erzeugen(flugzeug=flugzeug)
+                    print("\n       __|__\n"
+                          "--o--o--(_)--o--o-- Ein neues Flugzeug wurde im System aufgenommen: "
+                          "Typ:{}, Gesellschaft:{}, Nummer:{}, Soll-Zeit-Landung:{} Uhr\n".format(flugzeug.typ,
+                                                                                                  flugzeug.gesellschaft,
+                                                                                                  flugzeug.nummer,
+                                                                                                  flugzeug.zeit_soll))
+                    self.aktuelle_flugzeuge.append(flugzeug)
+                    self.bekannte_flugzeuge.append(flugzeug)
+                    time.sleep(3)
+                else:
+                    print("\nDas von Ihnen eingegebene Flugzeug existiert bereits.\n"
+                          "Bitte geben Sie etwas anderes ein.")
+
+        else:
             flugzeug.nummer = self._flugnummer_erzeugen(flugzeug=flugzeug)
-            print("       __|__\n"
-                  "--o--o--(_)--o--o-- Neues Flugzeug wurde in System aufgenommen: "
-                  "Typ:{}, Gesellschaft:{}, Nummer:{}\n".format(flugzeug.typ,
-                                                                flugzeug.gesellschaft,
-                                                                flugzeug.nummer))
-            self.registrierte_flugzeuge.append(flugzeug)
+            print("\n       __|__\n"
+            "--o--o--(_)--o--o-- Ein neues Flugzeug wurde im System aufgenommen: "
+            "Typ:{}, Gesellschaft:{}, Nummer:{}, Soll-Zeit-Landung:{} Uhr\n".format(flugzeug.typ,
+                                                                                    flugzeug.gesellschaft,
+                                                                                    flugzeug.nummer,
+                                                                                    flugzeug.zeit_soll))
+            self.aktuelle_flugzeuge.append(flugzeug)
             self.bekannte_flugzeuge.append(flugzeug)
             time.sleep(3)
-            self._naechster_schritt_aufgrund_flugzeug_status(flugzeug, index=len(self.registrierte_flugzeuge))
-        else:
-            print("Das von Ihnen eingegebene Flugzeug existiert bereits. Bitte geben Sie etwas anderes ein.")
+
 
     def _naechster_schritt_aufgrund_flugzeug_status(self, flugzeug, index):
         if flugzeug.bahn is None and flugzeug.parkplatz is None:
@@ -124,28 +127,33 @@ class InformationSystem:
                 flugzeug.gestartet:
             self._flugzeug_starten(flugzeug, index)
 
-        print("Bahnen")
-        for test in self.flughafen.bahnen:
-            print(test.flugzeug)
+    def _manuelle_entscheidung(self, flughafen_objekte, flugzeug, belegen):
 
-        print("Parkplätze")
-        for test in self.flughafen.parkplaetze:
-            print(test.flugzeug)
+        for i in range(0, len(flughafen_objekte)):
+            if flughafen_objekte[i].flugzeug is None and belegen:
+                print(str(i) + ": " + "{} {} ist verfügbar.".format(flughafen_objekte[i].name,
+                                                                    str(flughafen_objekte[i].nummer)))
+            elif flughafen_objekte[i].flugzeug is not None and not belegen:
+                print(str(i) + ": " + "{} {} ist verfügbar.".format(flughafen_objekte[i].name,
+                                                                    str(flughafen_objekte[i].nummer)))
 
-    @staticmethod
-    def _automatische_entscheidung(flughafen_objekte, flugzeug, belegen):
-        for flughafen_objekt in flughafen_objekte:
-            if flughafen_objekt.flugzeug is None and belegen:
-                flughafen_objekt.flugzeug = flugzeug
-                return flughafen_objekt
+        index = self._try_except_utility_methode(
+            funktion=lambda: int(input("\nAuswahl über Index treffen: ")),
+            standard=lambda: print("Das ist kein valider Index."))
 
-            elif flughafen_objekt.flugzeug is not None and not belegen:
-                return flughafen_objekt
+        self._flugzeug_historie_generieren(flugzeug=flugzeug, intent=flugzeug.naechster_schritt)
+
+        if belegen:
+            flughafen_objekte[index].flugzeug = flugzeug
+            return flughafen_objekte[index]
+
+        elif not belegen:
+            return flughafen_objekte[index]
         return None
 
     def _flugzeug_landen(self, flugzeug, index):
         bahn = self._try_except_utility_methode(
-            funktion=lambda: self._automatische_entscheidung(
+            funktion=lambda: self._manuelle_entscheidung(
                 flughafen_objekte=self.flughafen.bahnen,
                 flugzeug=flugzeug,
                 belegen=True),
@@ -158,26 +166,23 @@ class InformationSystem:
                                                                       flugzeug.gesellschaft,
                                                                       flugzeug.nummer,
                                                                       bahn.nummer))
-            flugzeug.zeit_ist = datetime.now()
+            flugzeug.zeit_ist = dt.now()
             flugzeug.bahn = bahn
             flugzeug.gelandet = True
-            self._flugzeug_historie_generieren(flugzeug=flugzeug, intent="LANDEN")
+            flugzeug.naechster_schritt = "einparken"
             time.sleep(3)
 
         else:
-
-            self.wartelist_landen.append(flugzeug)
             print("Es konnte keine freie Landebahn gefunden werden."
                   "\nSie müssen erst ein Flugzeug einparken.")
 
     def _flugzeug_einparken(self, flugzeug, index):
         parkplatz = self._try_except_utility_methode(
-            funktion=lambda: self._automatische_entscheidung(
+            funktion=lambda: self._manuelle_entscheidung(
                 flughafen_objekte=self.flughafen.parkplaetze,
                 flugzeug=flugzeug,
                 belegen=True),
             standard=None)
-
         if parkplatz is not None:
             print("Das Flugzeug ({} Typ:{}, Gesellschaft:{}, "
                   "Nummer:{}) wurde auf dem Parkplatz {} geparkt.".format(index,
@@ -188,16 +193,17 @@ class InformationSystem:
             flugzeug.bahn.flugzeug = None
             flugzeug.bahn = None
             flugzeug.parkplatz = parkplatz
-            self._flugzeug_historie_generieren(flugzeug=flugzeug, intent="EINPARKEN")
+            flugzeug.naechster_schritt = "ausparken"
             time.sleep(3)
 
         else:
             print("Es konnte keine freier Parkplatz gefunden werden."
                   "\nSie müssen erst ein Flugzeug ausparken.")
+        print("yes")
 
     def _flugzeug_ausparken(self, flugzeug, index):
         bahn = self._try_except_utility_methode(
-            funktion=lambda: self._automatische_entscheidung(
+            funktion=lambda: self._manuelle_entscheidung(
                 flughafen_objekte=self.flughafen.bahnen,
                 flugzeug=flugzeug,
                 belegen=True),
@@ -213,12 +219,12 @@ class InformationSystem:
             flugzeug.parkplatz = None
             flugzeug.bahn = bahn
             flugzeug.zeit_soll = self._try_except_utility_methode(
-                funktion=lambda: int(input("\nSoll-Zeit:")),
-                standard=datetime.now() + timedelta(5))
+                funktion=lambda: self._eingabe_uhrzeit(),
+                standard=dt.now() + timedelta(minutes=10))
             flugzeug.parkplatz = None
             flugzeug.gestartet = True
             flugzeug.gelandet = False
-            self._flugzeug_historie_generieren(flugzeug=flugzeug, intent="AUSPARKEN")
+            flugzeug.naechster_schritt = "starten"
             time.sleep(3)
 
         else:
@@ -234,12 +240,11 @@ class InformationSystem:
                                                                    flugzeug.bahn.nummer))
         flugzeug.bahn.flugzeug = None
         flugzeug.bahn = None
-        flugzeug.zeit_ist = datetime.now()
-        self.registrierte_flugzeuge.pop(index)
-        self._flugzeug_historie_generieren(flugzeug=flugzeug, intent="STARTEN")
-        time.sleep(3)
+        flugzeug.zeit_ist = dt.now()
+        self.aktuelle_flugzeuge.pop(index)
 
         print("Das Flugzeug ist gestartet und kann nicht mehr ausgewählt werden.")
+        time.sleep(3)
 
     def _flugzeug_historie_generieren(self, flugzeug, intent):
         self.historie_flugzeuge.append({intent: flugzeug.status})
@@ -248,5 +253,11 @@ class InformationSystem:
     def _try_except_utility_methode(funktion, standard):
         try:
             return funktion()
+
         except (Exception,):
-            return standard
+            traceback.print_exc()
+            try:
+                return standard()
+
+            except (Exception, ):
+                pass

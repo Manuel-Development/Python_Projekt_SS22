@@ -21,15 +21,15 @@ class Flughafen:
         self.bahnen = []
         self.parkplaetze = []
         self.lotsen = []
-        [self._instanziieren(cls_ref=self.__bahn_klasse, nummer=_, cls_variable=self.bahnen,
+        [self._instanziieren(cls_ref=self.__bahn_klasse, nummer=i, cls_variable=self.bahnen,
                              instance_name="Bahn")
-         for _ in range(self.anzahl_bahnen)]
-        [self._instanziieren(cls_ref=self.__park_position_klasse, nummer=_, cls_variable=self.parkplaetze,
+         for i in range(self.anzahl_bahnen)]
+        [self._instanziieren(cls_ref=self.__park_position_klasse, nummer=i, cls_variable=self.parkplaetze,
                              instance_name="Parkplatz")
-         for _ in range(self.anzahl_park_positionen)]
-        [self._instanziieren(cls_ref=self.__lotse_klasse, nummer=_, cls_variable=self.lotsen,
+         for i in range(self.anzahl_park_positionen)]
+        [self._instanziieren(cls_ref=self.__lotse_klasse, nummer=i, cls_variable=self.lotsen,
                              instance_name="Lotse")
-         for _ in range(self.anzahl_lotsen)]
+         for i in range(self.anzahl_lotsen)]
 
         print("*" * 150 + "\n"
               + self.name + "\n" +

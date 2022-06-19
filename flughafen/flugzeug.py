@@ -20,7 +20,7 @@ class Flugzeug:
         self._zeit_ist = None
         self._bahn = None
         self._parkplatz = None
-
+        self._naechster_schritt = "landen"
         self._gelandet = False
         self._gestartet = False
 
@@ -57,6 +57,14 @@ class Flugzeug:
         self._parkplatz = value
 
     @property
+    def naechster_schritt(self):
+        return self._naechster_schritt
+
+    @naechster_schritt.setter
+    def naechster_schritt(self, value: str):
+        self._naechster_schritt = value
+
+    @property
     def gelandet(self):
         return self._gelandet
 
@@ -74,4 +82,5 @@ class Flugzeug:
 
     @property
     def status(self):
-        return vars(self)
+        status = vars(self)
+        return status

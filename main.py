@@ -16,16 +16,13 @@ from flughafen.information_system import InformationSystem
 from flughafen.kommandos import Kommandos
 
 
-def main():
+if __name__ == '__main__':
     kommandos = Kommandos(information_system=InformationSystem(flughafen=Flughafen(name="Flughafen München",
-                                                               bahn_klasse=BahnPlatz,
-                                                               park_position_klasse=BahnPlatz,
-                                                               lotse_klasse=Lotse)))
+                                                                                   bahn_klasse=BahnPlatz,
+                                                                                   park_position_klasse=BahnPlatz,
+                                                                                   lotse_klasse=Lotse)))
     lotse = Lotse(name="Horst", nummer=1, kommandos=kommandos)
 
     while True:
         lotse.entscheidung(input_cmd=kommandos.kommandos_zeigen())
 
-
-if __name__ == '__main__':
-    main()

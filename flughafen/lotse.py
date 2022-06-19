@@ -23,10 +23,7 @@ class Lotse:
             self.kommandos.flugzeug_auswaehlen()
 
         elif input_cmd == "3":
-            self.kommandos.flugzeug_warteliste_auswaehlen()
-
-        elif input_cmd == "4":
             self.kommandos.flug_historie_darstellen()
 
-        elif input_cmd == "5":
+        elif input_cmd == "4":
             self.kommandos.information_system_beenden()
