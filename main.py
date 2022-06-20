@@ -8,7 +8,6 @@ __copyright__ = "Copyright Group_2, SFM"
 
 ########################################################################################################################
 
-# Imports from Custom Module
 from flughafen.flughafen import Flughafen
 from flughafen.lotse import Lotse
 from flughafen.bahnplatz import BahnPlatz

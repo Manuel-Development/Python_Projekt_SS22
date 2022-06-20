@@ -1,6 +1,6 @@
 ########################################################################################################################
 """
-flugzeug.py: Hier liegt die "Flugzeug-Klasse".
+bahnplatz.py: Hier liegt die "BahnPlatz-Klasse".
 """
 
 __author__ = "Python SS22"

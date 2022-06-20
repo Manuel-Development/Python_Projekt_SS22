@@ -1,6 +1,6 @@
 ########################################################################################################################
 """
-flugzeug.py: Description of what foobar does.
+flugzeug.py: Hier liegt die "Flugzeug-Klasse".
 """
 
 __author__ = "Python SS22"
@@ -82,5 +82,43 @@ class Flugzeug:
 
     @property
     def status(self):
-        status = vars(self)
+        status = {
+            "Typ": self.__try_except_utility_methode(funktion=lambda:
+            str(self.__fuelle_leere_werte(variable=self.typ)),
+                                                     standard="N.a."),
+            "Gesellschaft": self.__try_except_utility_methode(funktion=lambda:
+            str(self.__fuelle_leere_werte(variable=self.gesellschaft)),
+                                                              standard="N.a."),
+            "Flug.-nr": self.__try_except_utility_methode(funktion=lambda:
+            str(self.__fuelle_leere_werte(variable=self.nummer)),
+                                                          standard="N.a."),
+            "Soll-Zeit": self.__try_except_utility_methode(funktion=lambda:
+            str(self.__fuelle_leere_werte(variable=self.zeit_soll)),
+                                                           standard="N.a."),
+            "Ist-Zeit": self.__try_except_utility_methode(funktion=lambda:
+            str(self.__fuelle_leere_werte(variable=self.zeit_ist)),
+                                                          standard="N.a."),
+            "Bahn": self.__try_except_utility_methode(funktion=lambda:
+            str(self.__fuelle_leere_werte(variable=str(self.bahn.name) + " " + str(self.bahn.nummer))),
+                                                      standard="N.a."),
+            "Parkplatz": self.__try_except_utility_methode(funktion=lambda:
+            str(self.__fuelle_leere_werte(variable=str(self.parkplatz.name) + " " + str(self.parkplatz.nummer))),
+                                                           standard="N.a."),
+        }
         return status
+
+    @staticmethod
+    def __fuelle_leere_werte(variable):
+        if variable is not None:
+            return variable
+
+        else:
+            return "N.a."
+
+    @staticmethod
+    def __try_except_utility_methode(funktion, standard):
+        try:
+            return funktion()
+
+        except (Exception,):
+            return standard
