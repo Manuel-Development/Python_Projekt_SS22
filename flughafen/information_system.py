@@ -82,7 +82,7 @@ class InformationSystem:
             raise ValueError()
 
     def _flugnummer_erzeugen(self, flugzeug):
-        return ''.join(flugzeug.typ[:2] + str(100 + len(self.aktuelle_flugzeuge)))
+        return ''.join(flugzeug.gesellschaft[:2] + str(100 + len(self.aktuelle_flugzeuge)))
 
     def _ueberpruefe_vorkommen_in_system(self, input_entscheidung):
         if len(self.bekannte_flugzeuge) == 0 or (input_entscheidung == "y" or input_entscheidung == "Y"):
@@ -114,19 +114,29 @@ class InformationSystem:
             time.sleep(3)
 
         elif len(self.bekannte_flugzeuge) > 0 and (input_entscheidung == "n" or input_entscheidung == "N"):
-            [print("{}: Das Flugzeug des Typs {} von der Gesellschaft {} mit der Nummer {} ist bereits bekannt.".format(i,
-             self.bekannte_flugzeuge[i].typ,
-             self.bekannte_flugzeuge[i].gesellschaft,
-             self.bekannte_flugzeuge[i].nummer))
+            print("\n")
+            [print("{}: Folgende Flugzeugtypen sind bereits bekannt: {}.".format(i,
+             self.bekannte_flugzeuge[i].typ))
              for i in range(0, len(self.bekannte_flugzeuge))]
 
-            index = self._try_except_utility_methode(
+            index_typ = self._try_except_utility_methode(
                 funktion=lambda: int(input("\nAuswahl über Index treffen: ")),
                 standard=lambda: print("Das ist kein valider Index."))
+
+            print("\n")
+            [print("{}: Folgende Gesellschaften sind bereits bekannt: {}.".format(i,
+             self.bekannte_flugzeuge[i].gesellschaft))
+             for i in range(0, len(self.bekannte_flugzeuge))]
+
+            index_gesellschaft = self._try_except_utility_methode(
+                funktion=lambda: int(input("\nAuswahl über Index treffen: ")),
+                standard=lambda: print("Das ist kein valider Index."))
+
             try:
-                flugzeug = copy.deepcopy(self.bekannte_flugzeuge[index])
-                print(">>{}: Das Flugzeug des Typs {} von der Gesellschaft {}"
-                      " mit der Nummer {}.<< wurde ausgewählt\n".format(index,
+                flugzeug = copy.deepcopy(self.bekannte_flugzeuge[index_typ])
+                flugzeug.gesellschaft = self.bekannte_flugzeuge[index_gesellschaft].gesellschaft
+                print(">>{}: Das Flugzeug des Typs {}, der Gesellschaft {}"
+                      " mit der Nummer {}.<< wurde ausgewählt\n".format(index_typ,
                                                                         flugzeug.typ,
                                                                         flugzeug.gesellschaft,
                                                                         flugzeug.nummer))
