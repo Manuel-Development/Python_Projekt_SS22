@@ -10,7 +10,6 @@ __copyright__ = "Copyright Group_2, SFM"
 
 import copy
 import json
-import traceback
 from datetime import datetime as dt, timedelta
 import datetime
 import time
@@ -87,7 +86,7 @@ class InformationSystem:
     def _ueberpruefe_vorkommen_in_system(self, input_entscheidung):
         if len(self.bekannte_flugzeuge) == 0 or (input_entscheidung == "y" or input_entscheidung == "Y"):
 
-            if len(self.bekannte_flugzeuge) == 0:
+            if len(self.bekannte_flugzeuge) == 0 and (input_entscheidung == "n" or input_entscheidung == "N"):
                 print("Das Informationssystem kennt noch keine Flugzeuge.\n"
                       "Folglich müssen Sie erst ein neues Flugzeug eingeben.")
                 time.sleep(3)
@@ -149,6 +148,7 @@ class InformationSystem:
                                                                   flugzeug.nummer))
                 self.aktuelle_flugzeuge.append(flugzeug)
                 time.sleep(3)
+
             except (Exception, ):
                 print("Das ist kein valider Index.\n"
                       "Bitte wählen Sie aus dem dargestellten Bereich aus.")
@@ -311,5 +311,4 @@ class InformationSystem:
                 return standard()
 
             except (Exception, ):
-                traceback.print_exc()
                 pass
